@@ -1,9 +1,22 @@
 {
   "name": "functions",
   "description": "Cloud Functions for Firebase",
+  "private": true,
+  "version": "0.0.1",
   "dependencies": {
     "firebase-admin": "~5.2.1",
-    "firebase-functions": "^0.6.2"
+    "firebase-functions": "^0.6.2",
+    "actions-on-google": "^1.0.0",
+    "deep-freeze": "0.0.1",
+    "sprintf-js": "^1.1.1"
   },
-  "private": true
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-semistandard": "^11.0.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
 }
