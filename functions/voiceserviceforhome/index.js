@@ -25,7 +25,9 @@ process.env.DEBUG = 'actions-on-google:*';
 const Actions = {
   UNRECOGNIZED_DEEP_LINK: 'deeplink.unknown',
   TELL_FACT: 'tell.fact',
-  TELL_CAT_FACT: 'tell.cat.fact'
+  TELL_CAT_FACT: 'tell.cat.fact',
+  IOT_LIST_LIGHT:'list.light',
+  IOT_CONTROL_LIGHT:'control.light'
 };
 /** API.AI Parameters {@link https://api.ai/docs/actions-and-parameters#parameters} */
 const Parameters = {
@@ -254,11 +256,37 @@ const tellCatFact = app => {
   app.ask(richResponse, strings.general.noInputs);
 };
 
+/**
+ * Select Iot Lights form Firebase Realtime Datebase
+ * @param {ApiAiApp} app ApiAiApp instance
+ * @return {void}
+ */
+const iotListLight = app =>{
+
+  return app.ask("Living Room Light, Kiching Room Light, Lab Room Light");
+
+};
+
+/**
+ * Control Iot Light and Set Firebase Realtime Datebase
+ * @param {ApiAiApp} app ApiAiApp instance
+ * @return {void}
+ */
+const iotControlLight = app =>{
+  const data = initData(app);
+  const lightstate = data.lightstate;
+  const lighttype = data.lighttype;
+  return app.ask(`<speak>OK! Turn ${lighttype} Room Light ${lightstate} !</speak>`)
+  
+};
+
 /** @type {Map<string, function(ApiAiApp): void>} */
 const actionMap = new Map();
 actionMap.set(Actions.UNRECOGNIZED_DEEP_LINK, unhandledDeepLinks);
 actionMap.set(Actions.TELL_FACT, tellFact);
 actionMap.set(Actions.TELL_CAT_FACT, tellCatFact);
+actionMap.set(Actions.IOT_LIST_LIGHT, iotListLight);
+actionMap.set(Actions.IOT_CONTROL_LIGHT, iotControlLight);
 
 /**
  * The entry point to handle a http request
