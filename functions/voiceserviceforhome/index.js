@@ -19,6 +19,17 @@ const { sprintf } = require('sprintf-js');
 
 const strings = require('./strings');
 
+const firebase = require('firebase');
+const config = {
+    apiKey: "AIzaSyC6ombLPK8wJMUqtxHlUZxKnhTvCbb_-3E",
+    authDomain: "gavforraspberrypitest1.firebaseapp.com",
+    databaseURL: "https://gavforraspberrypitest1.firebaseio.com",
+    projectId: "gavforraspberrypitest1",
+    storageBucket: "gavforraspberrypitest1.appspot.com",
+    messagingSenderId: "207993653406"
+};
+firebase.initializeApp(config);
+
 process.env.DEBUG = 'actions-on-google:*';
 
 /** API.AI Actions {@link https://api.ai/docs/actions-and-parameters#actions} */
@@ -27,7 +38,8 @@ const Actions = {
   TELL_FACT: 'tell.fact',
   TELL_CAT_FACT: 'tell.cat.fact',
   IOT_LIST_LIGHT:'list.light',
-  IOT_CONTROL_LIGHT:'control.light'
+  IOT_CONTROL_LIGHT:'control.light',
+  IOT_LIGHT_STATE:'light.state'
 };
 /** API.AI Parameters {@link https://api.ai/docs/actions-and-parameters#parameters} */
 const Parameters = {
@@ -263,7 +275,19 @@ const tellCatFact = app => {
  */
 const iotListLight = app =>{
 
-  return app.ask("Living Room Light, Kiching Room Light, Lab Room Light");
+  var ref = firebase.database().ref("pengfeihome/iotlight/");
+  ref.once("value")
+    .then(function(snapshot) {
+      var strIotList = "";
+      if(snapshot){
+          for (var key in snapshot.val()) {
+            strIotList = strIotList + key + " light, ";
+          }
+          return app.ask(`<speak> ${strIotList} </speak>`);
+      }else {
+          return app.ask(`<speak>There are nothing!</speak>`);
+      }
+    });
 
 };
 
@@ -276,8 +300,32 @@ const iotControlLight = app =>{
   const data = initData(app);
   const lightstate = data.lightstate;
   const lighttype = data.lighttype;
+  const isOn = "on" === lightstate? true:false;
+
+  firebase.database().ref("pengfeihome/iotlight/").child(lighttype).child("state").set(isOn);
+
   return app.ask(`<speak>OK! Turn ${lighttype} Room Light ${lightstate} !</speak>`)
   
+};
+
+const iotLightState = app=>{
+
+  var ref = firebase.database().ref("pengfeihome/iotlight/");
+  ref.once("value")
+    .then(function(snapshot) {
+      var strIotList = "";
+      var tempOn = "";
+      if(snapshot){
+          for (var key in snapshot.val()) {
+            tempOn = snapshot.val()[key].state == true ? "on":"off";
+            strIotList = strIotList + key + " light is " + tempOn + ", ";
+          }
+          return app.ask(`<speak> ${strIotList} </speak>`);
+      }else {
+          return app.ask(`<speak>There are no iot light in your home!</speak>`);
+      }
+    });
+
 };
 
 /** @type {Map<string, function(ApiAiApp): void>} */
@@ -287,6 +335,8 @@ actionMap.set(Actions.TELL_FACT, tellFact);
 actionMap.set(Actions.TELL_CAT_FACT, tellCatFact);
 actionMap.set(Actions.IOT_LIST_LIGHT, iotListLight);
 actionMap.set(Actions.IOT_CONTROL_LIGHT, iotControlLight);
+actionMap.set(Actions.IOT_LIGHT_STATE, iotLightState);
+
 
 /**
  * The entry point to handle a http request

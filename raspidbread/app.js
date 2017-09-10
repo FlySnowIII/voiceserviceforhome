@@ -12,6 +12,7 @@ const config = {
 firebase.initializeApp(config);
 
 console.log("Project is Start");
+//firebase.database().ref("pengfeihome/iotlight/").child("kiching").set(false);
 
 const database = firebase.database();
 
@@ -21,5 +22,3 @@ iotdevicesRef.on('value',snapshot=>{
         console.log("Data is comming",snapshot.val());
     }
 });
-
-
