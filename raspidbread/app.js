@@ -17,8 +17,8 @@ console.log("Project is Start");
 const database = firebase.database();
 
 var iotdevicesRef = database.ref().child('pengfeihome').child('iotlight');
-iotdevicesRef.on('value',snapshot=>{
+iotdevicesRef.on('child_changed',(snapshot,prevChildKey)=>{
     if(snapshot){
-        console.log("Data is comming",snapshot.val());
+        console.log("Data is comming:",snapshot.key," : ",snapshot.val());
     }
 });
