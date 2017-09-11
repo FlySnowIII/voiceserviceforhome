@@ -297,12 +297,15 @@ const iotListLight = app =>{
  * @return {void}
  */
 const iotControlLight = app =>{
-  const data = initData(app);
-  const lightstate = data.lightstate;
-  const lighttype = data.lighttype;
-  const isOn = "on" === lightstate? true:false;
+  var data = app.data;
+  var lightstate = data.lightstate;
+  var lighttype = data.lighttype;
+  var isOn = "on" === lightstate? true:false;
 
-  firebase.database().ref("pengfeihome/iotlight/").child(lighttype).child("state").set(isOn);
+  console.log("iotControlLight: ",app);
+
+
+  firebase.database().ref().child("pengfeihome").child("iotlight").child(lighttype).child("state").set(isOn);
 
   return app.ask(`<speak>OK! Turn ${lighttype} Room Light ${lightstate} !</speak>`)
   
