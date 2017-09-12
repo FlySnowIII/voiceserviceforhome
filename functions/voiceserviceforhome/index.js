@@ -43,7 +43,10 @@ const Actions = {
 };
 /** API.AI Parameters {@link https://api.ai/docs/actions-and-parameters#parameters} */
 const Parameters = {
-  CATEGORY: 'category'
+  CATEGORY:  'category',
+  LIGHTTYPE: 'lighttype',
+  LIGHTSTATE:'lightstate'
+
 };
 /** API.AI Contexts {@link https://api.ai/docs/contexts} */
 const Contexts = {
@@ -297,12 +300,17 @@ const iotListLight = app =>{
  * @return {void}
  */
 const iotControlLight = app =>{
-  var data = app.data;
-  var lightstate = data.lightstate;
-  var lighttype = data.lighttype;
+  //app.data can't get Parameter from api.ai
+  const data = app.data;
+  //You can use app.getArgument() for get Parameter from api.ai
+  const lightstate = app.getArgument(Parameters.LIGHTSTATE);
+  const lighttype = app.getArgument(Parameters.LIGHTTYPE);
   var isOn = "on" === lightstate? true:false;
 
   console.log("iotControlLight: ",app);
+  console.log("iotControlLight data: ",data);
+  console.log("lightstate: ",lightstate);
+  console.log("lighttype: ",lighttype);
 
 
   firebase.database().ref().child("pengfeihome").child("iotlight").child(lighttype).child("state").set(isOn);
